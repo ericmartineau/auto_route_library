@@ -180,11 +180,13 @@ class _AutoRootRouterState extends State<_AutoRootRouter> {
   @override
   Widget build(BuildContext context) {
     final stateHash = router.stateHash;
-    return RouterScope(
-      controller: router,
-      navigatorObservers: widget.navigatorObservers,
-      inheritableObserversBuilder: widget.navigatorObserversBuilder,
-      stateHash: stateHash,
+    return RouterScope.from(
+      data: RouterScopeData(
+        controller: router,
+        navigatorObservers: widget.navigatorObservers,
+        inheritableObserversBuilder: widget.navigatorObserversBuilder,
+        stateHash: stateHash,
+      ),
       child: StackRouterScope(
         stateHash: stateHash,
         controller: router,
@@ -253,11 +255,13 @@ class _DeclarativeAutoRouterDelegate extends AutoRouterDelegate {
   @override
   Widget build(BuildContext context) {
     final stateHash = controller.stateHash;
-    return RouterScope(
-      controller: controller,
-      inheritableObserversBuilder: navigatorObservers,
-      stateHash: stateHash,
-      navigatorObservers: _navigatorObservers,
+    return RouterScope.from(
+      data: RouterScopeData(
+        controller: controller,
+        inheritableObserversBuilder: navigatorObservers,
+        stateHash: stateHash,
+        navigatorObservers: _navigatorObservers,
+      ),
       child: StackRouterScope(
         controller: controller,
         stateHash: stateHash,

@@ -10,6 +10,7 @@
 //
 // ignore_for_file: type=lint
 
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i3;
 import 'package:flutter/material.dart' as _i4;
 
@@ -25,46 +26,25 @@ class AppRouter extends _i3.RootStackRouter {
     FirstRoute.name: (routeData) {
       return _i3.MaterialPageX<dynamic>(
           routeData: routeData,
-          child: _i4.FutureBuilder(
-              builder: (context, snapshot) => snapshot.connectionState ==
-                      _i4.ConnectionState.done
-                  ? _i1.FirstPage()
-                  : const _i4.Scaffold(
-                      body: _i4.Center(child: _i4.CircularProgressIndicator())),
-              future: _i1.loadLibrary()));
+          child: _i3.DeferredWidget(_i1.loadLibrary, () => _i1.FirstPage()));
     },
     SecondRoute.name: (routeData) {
       return _i3.MaterialPageX<dynamic>(
           routeData: routeData,
-          child: _i4.FutureBuilder(
-              builder: (context, snapshot) => snapshot.connectionState ==
-                      _i4.ConnectionState.done
-                  ? _i2.EmptyRouterPage()
-                  : const _i4.Scaffold(
-                      body: _i4.Center(child: _i4.CircularProgressIndicator())),
-              future: _i2.loadLibrary()));
+          child:
+              _i3.DeferredWidget(_i2.loadLibrary, () => _i2.EmptyRouterPage()));
     },
     SecondNested1Route.name: (routeData) {
       return _i3.MaterialPageX<dynamic>(
           routeData: routeData,
-          child: _i4.FutureBuilder(
-              builder: (context, snapshot) => snapshot.connectionState ==
-                      _i4.ConnectionState.done
-                  ? _i2.SecondNested1Page()
-                  : const _i4.Scaffold(
-                      body: _i4.Center(child: _i4.CircularProgressIndicator())),
-              future: _i2.loadLibrary()));
+          child: _i3.DeferredWidget(
+              _i2.loadLibrary, () => _i2.SecondNested1Page()));
     },
     SecondNested2Route.name: (routeData) {
       return _i3.MaterialPageX<dynamic>(
           routeData: routeData,
-          child: _i4.FutureBuilder(
-              builder: (context, snapshot) => snapshot.connectionState ==
-                      _i4.ConnectionState.done
-                  ? _i2.SecondNested2Page()
-                  : const _i4.Scaffold(
-                      body: _i4.Center(child: _i4.CircularProgressIndicator())),
-              future: _i2.loadLibrary()));
+          child: _i3.DeferredWidget(
+              _i2.loadLibrary, () => _i2.SecondNested2Page()));
     }
   };
 

@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:auto_route/annotations.dart';
@@ -35,7 +36,6 @@ class RouteConfigResolver {
     var path = autoRoute.peek('path')?.stringValue;
     var isDeferred = autoRoute.peek('deferredLoading')?.boolValue ??
         _routerConfig.deferredLoading;
-
 
     if (page == null) {
       var redirectTo = autoRoute.peek('redirectTo')?.stringValue;
@@ -109,6 +109,8 @@ class RouteConfigResolver {
     bool? customRouteBarrierDismissible;
     String? customRouteBarrierLabel;
     ResolvedType? customRouteBuilder;
+    ResolvedType? routeParametersType;
+    ResolvedType? routeParameters;
     ResolvedType? transitionBuilder;
     int? customRouteBarrierColor;
     if (autoRoute.instanceOf(TypeChecker.fromRuntime(MaterialRoute))) {
@@ -138,6 +140,15 @@ class RouteConfigResolver {
           autoRoute.peek('customRouteBuilder')?.objectValue.toFunctionValue();
       if (builderFunction != null) {
         customRouteBuilder = _typeResolver.resolveFunctionType(builderFunction);
+      }
+      var routeParametersValue = autoRoute.peek('routeParameters');
+      if (routeParametersValue != null) {
+        // routeParameters = routeParametersValue.variable;
+        routeParameters = _typeResolver
+            .resolveVariableType(routeParametersValue.objectValue.variable!);
+
+        routeParametersType =
+            _typeResolver.resolveType(routeParametersValue.objectValue.type!);
       }
       customRouteBarrierColor = autoRoute.peek('barrierColor')?.intValue;
     } else {
@@ -265,6 +276,8 @@ class RouteConfigResolver {
       hasWrappedRoute: hasWrappedRoute,
       transitionBuilder: transitionBuilder,
       customRouteBuilder: customRouteBuilder,
+      routeParameters: routeParameters,
+      routeParametersType: routeParametersType,
       customRouteBarrierDismissible: customRouteBarrierDismissible,
       customRouteOpaque: customRouteOpaque,
       cupertinoNavTitle: cupertinoNavTitle,
@@ -286,5 +299,21 @@ class RouteConfigResolver {
       deferredLoading: isDeferred,
       customRouteBarrierColor: customRouteBarrierColor,
     );
+  }
+}
+
+extension DartObjectToAnyExt on DartObject? {
+  Object? toAnyValue() {
+    var self = this;
+    if (self == null || self.isNull) return null;
+    if (self.type!.isDartCoreBool) return self.toBoolValue();
+    if (self.type!.isDartCoreInt) return self.toIntValue();
+    if (self.type!.isDartCoreFunction) return self.toFunctionValue();
+    if (self.type!.isDartCoreNum) return self.toDoubleValue();
+    if (self.type!.isDartCoreNum) {
+      return self.toDoubleValue();
+    } else {
+      throw ArgumentError('This cannot be converted: ${self.type}');
+    }
   }
 }

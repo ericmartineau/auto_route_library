@@ -311,7 +311,7 @@ class AdaptiveRoute<T> extends AutoRoute<T> {
 }
 
 @optionalTypeArgs
-class CustomRoute<T> extends AutoRoute<T> {
+class CustomRoute<T, P> extends AutoRoute<T> {
   /// this builder function is passed to the transition builder
   /// function in [PageRouteBuilder]
   ///
@@ -358,6 +358,9 @@ class CustomRoute<T> extends AutoRoute<T> {
   /// passed to the barrierColor property in [PageRouteBuilder]
   final int? barrierColor;
 
+  /// Static parameters passed to the route builder.
+  final P? routeParameters;
+
   const CustomRoute({
     bool initial = false,
     bool fullscreenDialog = false,
@@ -366,6 +369,7 @@ class CustomRoute<T> extends AutoRoute<T> {
     String? path,
     bool fullMatch = false,
     required Type page,
+    this.routeParameters,
     List<Type>? guards,
     bool usesPathAsKey = false,
     List<AutoRoute>? children,
@@ -394,6 +398,32 @@ class CustomRoute<T> extends AutoRoute<T> {
           deferredLoading: deferredLoading,
         );
 }
+
+// @optionalTypeArgs
+// class ParameterizedCustomRoute<T, P> extends CustomRoute<T> {
+//   const ParameterizedCustomRoute({
+//     required super.page,
+//     super.barrierColor,
+//     super.barrierDismissible,
+//     super.barrierLabel,
+//     super.children,
+//     super.customRouteBuilder,
+//     super.deferredLoading,
+//     super.durationInMilliseconds,
+//     super.fullMatch,
+//     super.fullscreenDialog,
+//     super.guards,
+//     super.initial,
+//     super.maintainState,
+//     super.meta,
+//     super.name,
+//     super.opaque,
+//     super.path,
+//     super.reverseDurationInMilliseconds,
+//     super.transitionsBuilder,
+//     super.usesPathAsKey,
+//   });
+// }
 
 class PathParam {
   final String? name;

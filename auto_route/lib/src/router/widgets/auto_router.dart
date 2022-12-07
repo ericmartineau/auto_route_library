@@ -9,6 +9,8 @@ class AutoRouter extends StatefulWidget {
   final bool inheritNavigatorObservers;
   final GlobalKey<NavigatorState>? navigatorKey;
   final WidgetBuilder? placeholder;
+  final bool useRootRouter;
+  final String? childPath;
 
   const AutoRouter({
     Key? key,
@@ -17,6 +19,8 @@ class AutoRouter extends StatefulWidget {
     this.builder,
     this.navRestorationScopeId,
     this.navigatorKey,
+    this.useRootRouter = false,
+    this.childPath,
     this.inheritNavigatorObservers = true,
     this.placeholder,
   }) : super(key: key);
@@ -29,6 +33,8 @@ class AutoRouter extends StatefulWidget {
     RoutePopCallBack? onPopRoute,
     String? navRestorationScopeId,
     bool inheritNavigatorObservers = true,
+    bool useRootRouter = false,
+    String? childPath,
     GlobalKey<NavigatorState>? navigatorKey,
     OnNestedNavigateCallBack? onNavigate,
     WidgetBuilder? placeholder,
@@ -40,6 +46,8 @@ class AutoRouter extends StatefulWidget {
         navigatorObservers: navigatorObservers,
         inheritNavigatorObservers: inheritNavigatorObservers,
         onNavigate: onNavigate,
+        useRootRouter: useRootRouter,
+        childPath: childPath,
         placeholder: placeholder,
         routes: routes,
       );
@@ -79,7 +87,13 @@ class AutoRouterState extends State<AutoRouter> {
     super.didChangeDependencies();
     if (_controller == null) {
       final parentRouteData = RouteData.of(context);
-      final parentScope = RouterScope.of(context, watch: true);
+      var parentScope = widget.useRootRouter
+          ? RouterScopeData(
+              controller: context.router.root,
+              inheritableObserversBuilder: () => [],
+              stateHash: context.router.root.stateHash,
+              navigatorObservers: [])
+          : RouterScope.of(context, watch: true);
       _inheritableObserversBuilder = () {
         var observers = widget.navigatorObservers();
         if (!widget.inheritNavigatorObservers) {
@@ -122,11 +136,13 @@ class AutoRouterState extends State<AutoRouter> {
       placeholder: widget.placeholder,
     );
     final stateHash = controller!.stateHash;
-    return RouterScope(
-      controller: _controller!,
-      inheritableObserversBuilder: _inheritableObserversBuilder,
-      navigatorObservers: _navigatorObservers,
-      stateHash: stateHash,
+    return RouterScope.from(
+      data: RouterScopeData(
+        controller: _controller!,
+        inheritableObserversBuilder: _inheritableObserversBuilder,
+        navigatorObservers: _navigatorObservers,
+        stateHash: stateHash,
+      ),
       child: StackRouterScope(
         controller: _controller!,
         stateHash: stateHash,
@@ -163,6 +179,8 @@ class _DeclarativeAutoRouter extends StatefulWidget {
   final GlobalKey<NavigatorState>? navigatorKey;
   final OnNestedNavigateCallBack? onNavigate;
   final WidgetBuilder? placeholder;
+  final bool useRootRouter;
+  final String? childPath;
 
   const _DeclarativeAutoRouter({
     Key? key,
@@ -174,6 +192,8 @@ class _DeclarativeAutoRouter extends StatefulWidget {
     this.navRestorationScopeId,
     this.inheritNavigatorObservers = true,
     this.onNavigate,
+    this.useRootRouter = false,
+    this.childPath,
     this.placeholder,
   }) : super(key: key);
 
@@ -193,10 +213,19 @@ class _DeclarativeAutoRouterState extends State<_DeclarativeAutoRouter> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final parentData = RouteData.of(context);
+    final parentData = widget.useRootRouter
+        ? context.router.root.routeData
+        : RouteData.of(context);
     if (_controller == null) {
       _heroController = HeroController();
-      final parentScope = RouterScope.of(context);
+      final parentScope = widget.useRootRouter
+          ? RouterScopeData(
+              controller: context.router.root,
+              inheritableObserversBuilder: () => [],
+              stateHash: context.router.root.stateHash,
+              navigatorObservers: [])
+          : RouterScope.of(context);
+
       _inheritableObserversBuilder = () {
         var observers = widget.navigatorObservers();
         if (!widget.inheritNavigatorObservers) {
@@ -215,7 +244,7 @@ class _DeclarativeAutoRouterState extends State<_DeclarativeAutoRouter> {
           onNavigate: widget.onNavigate,
           navigatorKey: widget.navigatorKey,
           routeCollection: _parentController.routeCollection.subCollectionOf(
-            parentData.name,
+            widget.childPath ?? parentData.name,
           ),
           pageBuilder: _parentController.pageBuilder);
       _parentController.attachChildController(_controller!);
@@ -237,11 +266,13 @@ class _DeclarativeAutoRouterState extends State<_DeclarativeAutoRouter> {
     assert(_controller != null);
     final stateHash = controller!.stateHash;
 
-    return RouterScope(
-      controller: _controller!,
-      inheritableObserversBuilder: _inheritableObserversBuilder,
-      navigatorObservers: _navigatorObservers,
-      stateHash: stateHash,
+    return RouterScope.from(
+      data: RouterScopeData(
+        controller: _controller!,
+        inheritableObserversBuilder: _inheritableObserversBuilder,
+        navigatorObservers: _navigatorObservers,
+        stateHash: stateHash,
+      ),
       child: HeroControllerScope(
         controller: _heroController,
         child: AutoRouteNavigator(

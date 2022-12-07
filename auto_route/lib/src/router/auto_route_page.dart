@@ -192,7 +192,7 @@ mixin _NoAnimationPageRouteTransitionMixin<T> on PageRoute<T> {
 
 mixin _CustomPageRouteTransitionMixin<T> on PageRoute<T> {
   /// Builds the primary contents of the route.
-  CustomPage<T> get _page => settings as CustomPage<T>;
+  CustomPage<T, dynamic> get _page => settings as CustomPage<T, dynamic>;
 
   @protected
   Widget buildContent(BuildContext context);
@@ -348,10 +348,11 @@ class AdaptivePage<T> extends _TitledAutoRoutePage<T> {
   }
 }
 
-typedef CustomRouteBuilder = Route<T> Function<T>(
-    BuildContext context, Widget child, CustomPage<T> page);
+typedef CustomRouteBuilder<P> = Route<T> Function<T>(
+    BuildContext context, Widget child, CustomPage<T, P> page,
+    [P? parameters]);
 
-class CustomPage<T> extends AutoRoutePage<T> {
+class CustomPage<T, P> extends AutoRoutePage<T> {
   final bool opaque;
   final int durationInMilliseconds;
   final int reverseDurationInMilliseconds;
@@ -359,14 +360,16 @@ class CustomPage<T> extends AutoRoutePage<T> {
   final bool barrierDismissible;
   final String? barrierLabel;
   final RouteTransitionsBuilder? transitionsBuilder;
-  final CustomRouteBuilder? customRouteBuilder;
+  final CustomRouteBuilder<P>? customRouteBuilder;
+  final P? params;
 
   CustomPage({
-    required RouteData routeData,
-    required Widget child,
-    bool fullscreenDialog = false,
-    bool maintainState = true,
+    required super.routeData,
+    required super.child,
+    super.fullscreenDialog,
+    super.maintainState,
     this.opaque = true,
+    this.params,
     this.durationInMilliseconds = 300,
     this.reverseDurationInMilliseconds = 300,
     this.barrierColor,
@@ -374,20 +377,14 @@ class CustomPage<T> extends AutoRoutePage<T> {
     this.barrierLabel,
     this.transitionsBuilder,
     this.customRouteBuilder,
-    LocalKey? key,
-  }) : super(
-          routeData: routeData,
-          key: key,
-          child: child,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
-        );
+    super.key,
+  });
 
   @override
   Route<T> onCreateRoute(BuildContext context) {
     final result = buildPage(context);
     if (customRouteBuilder != null) {
-      return customRouteBuilder!<T>(context, result, this);
+      return customRouteBuilder!<T>(context, result, this, params);
     }
     return _CustomPageBasedPageRouteBuilder<T>(page: this);
   }

@@ -1,28 +1,58 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
 
-@protected
-class RouterScope extends InheritedWidget {
+class RouterScopeData {
   final RoutingController controller;
   final NavigatorObserversBuilder inheritableObserversBuilder;
   final int stateHash;
   final List<NavigatorObserver> navigatorObservers;
 
-  const RouterScope({
+  const RouterScopeData(
+      {required this.controller,
+      required this.inheritableObserversBuilder,
+      required this.stateHash,
+      required this.navigatorObservers});
+
+  T? firstObserverOfType<T extends NavigatorObserver>() {
+    final typedObservers = navigatorObservers.whereType<T>();
+    if (typedObservers.isNotEmpty) {
+      return typedObservers.first;
+    } else {
+      return null;
+    }
+  }
+}
+
+@protected
+class RouterScope extends InheritedWidget {
+  final RouterScopeData data;
+  const RouterScope.from({
     Key? key,
     required Widget child,
-    required this.controller,
-    required this.navigatorObservers,
-    required this.inheritableObserversBuilder,
-    required this.stateHash,
+    required this.data,
   }) : super(child: child, key: key);
 
-  static RouterScope of(BuildContext context, {bool watch = false}) {
-    RouterScope? scope;
+  RouterScope({
+    Key? key,
+    required Widget child,
+    required RoutingController controller,
+    required NavigatorObserversBuilder inheritableObserversBuilder,
+    required int stateHash,
+    required List<NavigatorObserver> navigatorObservers,
+  })  : data = RouterScopeData(
+          controller: controller,
+          inheritableObserversBuilder: inheritableObserversBuilder,
+          stateHash: stateHash,
+          navigatorObservers: navigatorObservers,
+        ),
+        super(child: child, key: key);
+
+  static RouterScopeData of(BuildContext context, {bool watch = false}) {
+    RouterScopeData? scope;
     if (watch) {
-      scope = context.dependOnInheritedWidgetOfExactType<RouterScope>();
+      scope = context.dependOnInheritedWidgetOfExactType<RouterScope>()?.data;
     } else {
-      scope = context.findAncestorWidgetOfExactType<RouterScope>();
+      scope = context.findAncestorWidgetOfExactType<RouterScope>()?.data;
     }
     assert(() {
       if (scope == null) {
@@ -36,18 +66,9 @@ class RouterScope extends InheritedWidget {
     return scope!;
   }
 
-  T? firstObserverOfType<T extends NavigatorObserver>() {
-    final typedObservers = navigatorObservers.whereType<T>();
-    if (typedObservers.isNotEmpty) {
-      return typedObservers.first;
-    } else {
-      return null;
-    }
-  }
-
   @override
   bool updateShouldNotify(covariant RouterScope oldWidget) {
-    return stateHash != oldWidget.stateHash;
+    return data.stateHash != oldWidget.data.stateHash;
   }
 }
 

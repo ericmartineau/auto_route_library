@@ -24,6 +24,8 @@ class RouteConfig {
   final List<ParamConfig> parameters;
   final ResolvedType? transitionBuilder;
   final ResolvedType? customRouteBuilder;
+  final ResolvedType? routeParametersType;
+  final ResolvedType? routeParameters;
   final String? redirectTo;
   final bool? hasWrappedRoute;
   final int? reverseDurationInMilliseconds;
@@ -54,6 +56,8 @@ class RouteConfig {
     this.parameters = const [],
     this.transitionBuilder,
     this.customRouteBuilder,
+    this.routeParametersType,
+    this.routeParameters,
     this.redirectTo,
     this.hasWrappedRoute,
     this.durationInMilliseconds,
@@ -89,6 +93,11 @@ class RouteConfig {
     List<ParamConfig>? parameters,
     ResolvedType? transitionBuilder,
     ResolvedType? customRouteBuilder,
+    ResolvedType? routeParameters,
+    ResolvedType? routeParametersType,
+    ResolvedType? resolvedType,
+    Map<String, Object?>? customRoutePositionalArgs,
+    Map? customRouteNamedArgs,
     String? redirectTo,
     bool? usesTabsRouter,
     int? reverseDurationInMilliseconds,
@@ -129,6 +138,10 @@ class RouteConfig {
             identical(transitionBuilder, this.transitionBuilder)) &&
         (customRouteBuilder == null ||
             identical(customRouteBuilder, this.customRouteBuilder)) &&
+        (routeParameters == null ||
+            identical(routeParameters, this.routeParameters)) &&
+        (routeParametersType == null ||
+            identical(routeParametersType, this.routeParametersType)) &&
         (redirectTo == null || identical(redirectTo, this.redirectTo)) &&
         (usesTabsRouter == null ||
             identical(usesTabsRouter, this.hasWrappedRoute)) &&
@@ -147,7 +160,8 @@ class RouteConfig {
             identical(childRouterConfig, this.childRouterConfig)) &&
         (hasConstConstructor == null ||
             identical(hasConstConstructor, this.hasConstConstructor)) &&
-        (deferredLoading == null || identical(deferredLoading, this.deferredLoading))) {
+        (deferredLoading == null ||
+            identical(deferredLoading, this.deferredLoading))) {
       return this;
     }
 
@@ -170,6 +184,8 @@ class RouteConfig {
       parameters: parameters ?? this.parameters,
       transitionBuilder: transitionBuilder ?? this.transitionBuilder,
       customRouteBuilder: customRouteBuilder ?? this.customRouteBuilder,
+      routeParameters: routeParameters ?? this.routeParameters,
+      routeParametersType: routeParametersType ?? this.routeParametersType,
       redirectTo: redirectTo ?? this.redirectTo,
       hasWrappedRoute: usesTabsRouter ?? this.hasWrappedRoute,
       reverseDurationInMilliseconds:

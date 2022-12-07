@@ -101,4 +101,20 @@ class RouteData {
     }
     return _match;
   }
+
+  RouteMatch? child(String path) {
+    return pendingChildren.where((p) => p.path == path).firstOrNull;
+  }
+
+  RouteData? childData(String path) {
+    var childPath = child(path);
+    return childPath == null
+        ? null
+        : RouteData(
+            route: childPath,
+            parent: this,
+            pendingChildren: [],
+            router: router,
+          );
+  }
 }

@@ -99,7 +99,7 @@ abstract class AutoTabsRouter extends StatefulWidget {
   }
 }
 
-abstract class _AutoTabsRouterState extends State<AutoTabsRouter> {
+abstract class AutoTabsRouterState extends State<AutoTabsRouter> {
   TabsRouter? _controller;
   late RoutingController _parentController;
 
@@ -182,7 +182,7 @@ class _AutoTabsRouterIndexedStack extends AutoTabsRouter {
       _AutoTabsRouterIndexedStackState();
 }
 
-class _AutoTabsRouterIndexedStackState extends _AutoTabsRouterState
+class _AutoTabsRouterIndexedStackState extends AutoTabsRouterState
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -265,11 +265,13 @@ class _AutoTabsRouterIndexedStackState extends _AutoTabsRouterState
             stack: stack,
           );
 
-    return RouterScope(
-      controller: _controller!,
-      inheritableObserversBuilder: _inheritableObserversBuilder,
-      stateHash: stateHash,
-      navigatorObservers: _navigatorObservers,
+    return RouterScope.from(
+      data: RouterScopeData(
+        controller: _controller!,
+        inheritableObserversBuilder: _inheritableObserversBuilder,
+        stateHash: stateHash,
+        navigatorObservers: _navigatorObservers,
+      ),
       child: TabsRouterScope(
         controller: _controller!,
         stateHash: stateHash,
@@ -419,7 +421,7 @@ class AutoTabsRouterPageView extends AutoTabsRouter {
   AutoTabsRouterPageViewState createState() => AutoTabsRouterPageViewState();
 }
 
-class AutoTabsRouterPageViewState extends _AutoTabsRouterState
+class AutoTabsRouterPageViewState extends AutoTabsRouterState
     with _RouteAwareTabsMixin<AutoTabsRouter> {
   late PageController _pageController;
 
@@ -533,7 +535,7 @@ class _AutoTabsRouterTabBar extends AutoTabsRouter {
   _AutoTabsRouterTabBarState createState() => _AutoTabsRouterTabBarState();
 }
 
-class _AutoTabsRouterTabBarState extends _AutoTabsRouterState
+class _AutoTabsRouterTabBarState extends AutoTabsRouterState
     with _RouteAwareTabsMixin<AutoTabsRouter>, TickerProviderStateMixin {
   late TabController _tabController;
 
@@ -652,7 +654,7 @@ class _AutoTabsRouterBuilder extends AutoTabsRouter {
   _AutoTabsRouterBuilderState createState() => _AutoTabsRouterBuilderState();
 }
 
-class _AutoTabsRouterBuilderState extends _AutoTabsRouterState
+class _AutoTabsRouterBuilderState extends AutoTabsRouterState
     with _RouteAwareTabsMixin<AutoTabsRouter> {
   @override
   void _setupController() {

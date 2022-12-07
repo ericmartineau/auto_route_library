@@ -6,6 +6,20 @@ import 'package:flutter/material.dart';
 // pare builder
 part 'web_router.gr.dart';
 
+///
+/// Foo
+Route<T> customRouteBuilder<T>(BuildContext context, Widget child,
+    CustomPage<T, ModalRouteParameters> page,
+    [ModalRouteParameters? params]) {
+  return MaterialPageRoute(builder: page.buildPage, settings: page);
+}
+
+///
+class ModalRouteParameters {
+  const ModalRouteParameters({this.expanded = true});
+  final bool expanded;
+}
+
 @CustomAutoRouter(
   transitionsBuilder: TransitionsBuilders.noTransition,
   replaceInRouteName: 'Page|Screen,Route',
@@ -15,6 +29,8 @@ part 'web_router.gr.dart';
       page: HomePage,
       initial: true,
       reverseDurationInMilliseconds: 0,
+      routeParameters: ModalRouteParameters(expanded: false),
+      customRouteBuilder: customRouteBuilder,
     ),
     AutoRoute(path: '/login', page: LoginPage),
     RedirectRoute(
@@ -58,7 +74,7 @@ class WebAppRouter extends _$WebAppRouter {
   WebAppRouter(
     AuthService authService,
   ) : super(
-          // authGuard: AuthGuard(authService),
+        // authGuard: AuthGuard(authService),
         );
 }
 
@@ -69,7 +85,6 @@ class HomePage extends StatelessWidget {
     this.navigate,
     this.showUserPosts,
   }) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +245,8 @@ class _UserPageState extends State<UserPage> {
       appBar: AppBar(
         title: Builder(
           builder: (context) {
-            return Text(context.topRouteMatch.name + ' ${widget.id} query: ${widget.query}');
+            return Text(context.topRouteMatch.name +
+                ' ${widget.id} query: ${widget.query}');
           },
         ),
         leading: AutoLeadingButton(),

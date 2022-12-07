@@ -77,9 +77,23 @@ class TypeResolver {
     final displayName = function.displayName.replaceFirst(RegExp('^_'), '');
     var functionName = displayName;
     Element elementToImport = function;
-    if (function.enclosingElement2 is ClassElement) {
-      functionName = '${function.enclosingElement2.displayName}.$displayName';
-      elementToImport = function.enclosingElement2;
+    if (function.enclosingElement is ClassElement) {
+      functionName = '${function.enclosingElement.displayName}.$displayName';
+      elementToImport = function.enclosingElement;
+    }
+    return ResolvedType(
+      name: functionName,
+      import: resolveImport(elementToImport),
+    );
+  }
+
+  ResolvedType resolveVariableType(VariableElement variable) {
+    final displayName = variable.displayName.replaceFirst(RegExp('^_'), '');
+    var functionName = displayName;
+    Element elementToImport = variable;
+    if (variable.enclosingElement is ClassElement) {
+      functionName = '${variable.enclosingElement!.displayName}.$displayName';
+      elementToImport = variable.enclosingElement!;
     }
     return ResolvedType(
       name: functionName,

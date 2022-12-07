@@ -1,7 +1,7 @@
 part of 'routing_controller.dart';
 
 typedef PageBuilder = AutoRoutePage Function(RouteData data);
-typedef PageFactory = Page<dynamic> Function(RouteData data);
+typedef PageFactory = Page Function(RouteData data);
 
 abstract class RootStackRouter extends StackRouter {
   RootStackRouter([GlobalKey<NavigatorState>? navigatorKey])
