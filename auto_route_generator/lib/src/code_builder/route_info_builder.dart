@@ -131,7 +131,7 @@ Iterable<Parameter> buildArgParams(
   return parameters.where((p) => !p.isInheritedPathParam).map(
         (p) => Parameter(
           (b) {
-            var defaultCode;
+            Code? defaultCode;
             if (p.defaultValueCode != null) {
               if (p.defaultValueCode!.contains('const')) {
                 defaultCode = Code(

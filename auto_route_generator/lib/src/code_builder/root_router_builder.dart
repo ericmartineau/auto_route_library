@@ -89,9 +89,10 @@ Field buildPagesMap(List<RouteConfig> routes, bool deferredLoading) {
 }
 
 Spec buildMethod(RouteConfig r, bool deferredLoading) {
-  final useConsConstructor =
-      r.hasConstConstructor && !(r.deferredLoading ?? deferredLoading);
-  var constructedPage = useConsConstructor
+  final constructedPage =
+      ((r.deferredLoading ?? deferredLoading) && r.pageType != null)
+          ? getDeferredBuilder(r)
+          : r.hasConstConstructor
       ? r.pageType!.refer.constInstance([])
       : getPageInstance(r);
 
@@ -302,13 +303,13 @@ Iterable<Object> buildRoutes(List<RouteConfig> routes, {Reference? parent}) =>
 Expression _getLiteralValue(MetaEntry<dynamic> metaEntry) {
   switch (metaEntry.type) {
     case 'String':
-      return literalString(metaEntry.value);
+      return literalString(metaEntry.value as String);
     case 'int':
-      return literalNum(metaEntry.value);
+      return literalNum(metaEntry.value as int);
     case 'double':
-      return literalNum(metaEntry.value);
+      return literalNum(metaEntry.value as double);
     case 'bool':
-      return literalBool(metaEntry.value);
+      return literalBool(metaEntry.value as bool);
     default:
       return literal(metaEntry.value);
   }

@@ -36,28 +36,29 @@ void main(List<String> args) async {
   }
 }
 
-
-
 void _handleAndroidConfig(ArgResults args) {
   final enableMode = args.wasParsed('enable');
   final disableMode = args.wasParsed('disable');
-  final host = args['enable'] ?? args['disable'];
+  final host = (args['enable'] ?? args['disable']) as String?;
   assert(host != null, 'Host is not specified');
 
   if (!disableMode && !enableMode) {
-    throw Exception('Invalid Action, valid action example: --enable www.example.com');
+    throw Exception(
+        'Invalid Action, valid action example: --enable www.example.com');
   }
 
-  final manifestPath = args['manifest-path'] ?? 'android/app/src/main/AndroidManifest.xml';
+  final manifestPath = (args['manifest-path'] ??
+      'android/app/src/main/AndroidManifest.xml') as String;
   final file = File(manifestPath);
-  if(!file.existsSync()){
+  if (!file.existsSync()) {
     throw Exception('Could not find AndroidManifest.xml file at $manifestPath');
   }
 
   final document = XmlDocument.parse(file.readAsStringSync());
   final application = document.rootElement.findElements('application').first;
   final activities = application.findElements('activity');
-  final launchActivity = activities.firstWhere((a) => a.childElements.any(_isLaunchIntentFilter));
+  final launchActivity =
+      activities.firstWhere((a) => a.childElements.any(_isLaunchIntentFilter));
   final intentFilters = launchActivity.findElements('intent-filter');
   final deepLinkIntentFilters = _getDeeplinkIntents(intentFilters);
 
@@ -100,7 +101,8 @@ void _handleAndroidConfig(ArgResults args) {
       }
     }
 
-    builder.element('intent-filter', attributes: {'android:autoVerify': 'true'}, nest: () {
+    builder.element('intent-filter', attributes: {'android:autoVerify': 'true'},
+        nest: () {
       builder.element('action', nest: () {
         builder.attribute('android:name', 'android.intent.action.VIEW');
       });
@@ -112,7 +114,7 @@ void _handleAndroidConfig(ArgResults args) {
       });
       builder.element('data', nest: () {
         builder.attribute('android:scheme', 'http');
-        builder.attribute('android:host', host);
+        builder.attribute('android:host', host!);
       });
       builder.element('data', nest: () {
         builder.attribute('android:scheme', 'https');
@@ -123,7 +125,12 @@ void _handleAndroidConfig(ArgResults args) {
   file.writeAsStringSync(document.toXmlString(
     pretty: true,
     indent: '    ',
-    indentAttribute: (attr) => !['android:name', 'android:scheme', 'android:host', 'xmlns:android'].contains(
+    indentAttribute: (attr) => ![
+      'android:name',
+      'android:scheme',
+      'android:host',
+      'xmlns:android'
+    ].contains(
       attr.name.toString(),
     ),
   ));
@@ -160,9 +167,11 @@ bool _isLaunchIntentFilter(XmlElement element) {
     ),
   );
 }
+
 ArgParser _setupArgParser() {
   return ArgParser()
-    ..addOption('enable', abbr: 'e', help: 'Enable specified host', valueHelp: 'www.example.com')
+    ..addOption('enable',
+        abbr: 'e', help: 'Enable specified host', valueHelp: 'www.example.com')
     ..addOption(
       'disable',
       abbr: 'd',
@@ -178,6 +187,7 @@ ArgParser _setupArgParser() {
       allowed: ['android', 'ios'],
       defaultsTo: ['android', 'ios'],
     )
-    ..addOption('manifest-path', abbr: 'm', help: 'Specifies AndroidManifest.xml file path')
+    ..addOption('manifest-path',
+        abbr: 'm', help: 'Specifies AndroidManifest.xml file path')
     ..addFlag('help', abbr: 'h', negatable: false);
 }

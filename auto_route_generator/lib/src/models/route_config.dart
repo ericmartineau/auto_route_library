@@ -238,9 +238,9 @@ class RouteConfig {
   Iterable<ParamConfig> get namedParams => parameters.where((p) => p.isNamed);
 
   String get routeName {
-    var nameToUse;
+    late String nameToUse;
     if (name != null) {
-      nameToUse = name;
+      nameToUse = name!;
     } else if (replacementInRouteName != null &&
         replacementInRouteName!.split(',').length == 2) {
       var parts = replacementInRouteName!.split(',');

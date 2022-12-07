@@ -21,7 +21,7 @@ class AppState extends State<App> {
       setState(() {});
     });
 
-  late final _appRouter = WebAppRouter(authService);
+  final _appRouter = WebAppRouter(authService);
   List<PageRouteInfo>? urlRoutes;
   @override
   Widget build(BuildContext context) {
