@@ -89,12 +89,12 @@ Field buildPagesMap(List<RouteConfig> routes, bool deferredLoading) {
 }
 
 Spec buildMethod(RouteConfig r, bool deferredLoading) {
-  final constructedPage =
+  Expression constructedPage =
       ((r.deferredLoading ?? deferredLoading) && r.pageType != null)
-          ? getDeferredBuilder(r)
+          ? getDeferredBuilder(r, getPageInstance(r))
           : r.hasConstConstructor
-      ? r.pageType!.refer.constInstance([])
-      : getPageInstance(r);
+              ? r.pageType!.refer.constInstance([])
+              : getPageInstance(r);
 
   if (r.hasWrappedRoute == true) {
     constructedPage = refer('WrappedRoute', autoRouteImport).newInstance(
